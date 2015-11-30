@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Bootstrap 101 Template</title>
+
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="jquery.js"></script>
+<script src="jquery-ui.js"></script>
+<link rel="stylesheet" href="jquery-ui.css">
+</head>
+
+<body>
+ <div class="ui-widget">
+   <input type="text" id="autoComplete" name="namePrefix"/>
+ </div>
+   <script type="text/javascript">
+     $(function(){
+    	 $("#autoComplete").autocomplete({
+    		 source : "autoComplete",
+    		 select : function(event,ui){
+    			 $("#autoComplete").val(ui.item.value);
+    		 }
+    	 });
+     });
+   </script>
+</body>
+
+</html>

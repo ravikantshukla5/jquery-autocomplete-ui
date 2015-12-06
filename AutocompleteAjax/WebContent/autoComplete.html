@@ -1,0 +1,104 @@
+<html>
+<head>
+
+<script src="resources/jquery.1.10.2.min.js"></script>
+<script src="resources/jquery-ui.js"></script>
+<link href="resources/jquery-ui.css" rel="stylesheet">
+
+</head>
+<body>
+
+	<script>
+		var items;
+		$(document).ready(function() {
+			$("#project").autocomplete({
+				minLength: 3,
+				source : function(request, response) {
+					$.ajax({
+						// basePath is used for defining contecxt-path of the url.
+						url : "autoComplete",
+						dataType : "json",
+						// data to be sent to the server:
+						data : {
+							term : request.term,
+							// for passing extra parameter:
+							param1 : "param1 Value",
+							param2 : "param2 Value"
+						},
+						/*
+						A Success function to be called if the request succeeds.The function gets
+						passed two arguments-
+						The data returned from the server, a string describing the status:
+						 */
+						success : function(data, type) {
+							console.log(data);
+							items = data;
+							response(items);
+						},
+						//if the request fails,A error function to be called.
+						error : function(data, type) {
+							console.log(type);
+						}
+					});
+				},
+				select: function( event, ui ) {
+		               $( "#project" ).val( ui.item.name );
+		               $( "#project-id" ).val( ui.item.email);
+		               $( "#project-description" ).html( ui.item.address );
+		               return false;
+		            }
+		         })
+		         .data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+		             return $( "<li>" )
+		             .append( "<a>" + item.name + "<br>" + item.email + "</a>" )
+		             .appendTo( ul );
+		          };
+
+		});
+		function searchForSelectedItem(formObj){
+			
+			if ($("#generalDivPost").size() > 0) {
+				$("#generalDivPost").show();
+			}
+			$.ajax({
+				url : "autoComplete",
+				cache : false,
+				data : getFormValues(formObj),
+				type : 'POST',
+				beforeSend : function() {
+					$('#container').empty();
+					$('#container').append('<div id="generalDivPost"></div>');
+					//$("#generalDivPost").append(loaderhtml);
+					//$("#generalDivPost").show();
+					//$('#circularG').show();
+				},
+				success : function(data) {
+					//$('#circularG').hide();
+					$("#generalDivPost").html(data);
+				},
+				error : function(data) {
+					//$('#circularG').hide();
+					$("#generalDivPost").html(tabErrorMessage);
+				}
+			});
+		}
+		function getFormValues(formObj){
+			
+			 var values = {};
+			 $.each($(formObj).serializeArray(), function(i, field) {
+			     values[field.name] = field.value;
+			 });
+			 return values;
+		}
+	</script>
+
+	 <div id="project-label">Select a project (type "a" for a start):</div>
+	 <form onsubmit="searchForSelectedItem(this);return false;">
+         <input id="project" name="name">
+         <input type="hidden" id="project-id" name="email">
+         <button type="submit">Search</button>
+         <p id="project-description"></p>
+    </form>
+    <div id="container"></div>     
+</body>
+</html>
